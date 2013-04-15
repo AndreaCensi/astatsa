@@ -1,0 +1,10 @@
+.. |astatsa| raw:: html
+      
+      <span class="brand">astatsa</span>
+
+
+.. |towrite| raw:: html
+
+     <span style="font-weight:bold">This section must still be written.</span>
+	 
+	 

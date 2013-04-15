@@ -1,0 +1,16 @@
+Metadata-Version: 1.1
+Name: astatsa
+Version: 0.1
+Summary:  A bunch of very basic statistical operators. 
+Home-page: http://github.com/AndreaCensi/astatsa
+Author: Andrea Censi
+Author-email: andrea@cds.caltech.edu
+License: LGPL
+Download-URL: http://github.com/AndreaCensi/astatsa/tarball/0.1
+Description: astatsa
+        =======
+        
+        astatsa
+Keywords: statistics
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
