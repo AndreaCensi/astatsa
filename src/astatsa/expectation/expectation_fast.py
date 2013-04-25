@@ -1,5 +1,6 @@
 from . import ExpectationInterface, contract, np
 from astatsa.utils import check_all_finite
+import warnings
 
 __all__ = ['ExpectationFast', 'ExpectationFaster']
 
@@ -20,6 +21,11 @@ class ExpectationFast(ExpectationInterface):
         self.accum = None
         self.needs_normalization = True
         self.extremely_fast = extremely_fast
+        
+    def merge(self, other):
+        warnings.warn('to test')
+        assert isinstance(other, ExpectationFast)
+        self.update(other.get_value(), other.accum_mass)
 
     @contract(cur_mass='float,>=0')
     def reset(self, cur_mass=1.0):

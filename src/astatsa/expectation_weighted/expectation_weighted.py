@@ -2,6 +2,7 @@ from contracts import contract
 from bootstrapping_olympics.utils.np_comparisons import check_all_finite
 import numpy as np 
 from astatsa.expectation_weighted.interface import ExpectationWeightedInterface
+import warnings
  
 class ExpectationWeighted(ExpectationWeightedInterface):
     ''' 
@@ -15,6 +16,12 @@ class ExpectationWeighted(ExpectationWeightedInterface):
          
         self._result = None
          
+    def merge(self, other):
+        warnings.warn('To test')
+        assert isinstance(other, ExpectationWeighted)
+        self.update(other.get_value(), other.get_mass())
+        
+        
     @contract(value='array,shape(x)', weight='array(>=0),shape(x)')
     def update(self, value, weight):
         check_all_finite(value)
