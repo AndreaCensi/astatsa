@@ -1,8 +1,9 @@
-from contracts import contract
-from bootstrapping_olympics.utils.np_comparisons import check_all_finite
-import numpy as np 
 from astatsa.expectation_weighted.interface import ExpectationWeightedInterface
+from astatsa.utils.np_comparisons import check_all_finite
+from contracts import contract
+import numpy as np
 import warnings
+ 
  
 class ExpectationWeighted(ExpectationWeightedInterface):
     ''' 
