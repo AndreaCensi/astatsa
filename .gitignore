@@ -18,3 +18,4 @@ priorities
 unpickable
 .noseids
 astats.egg-info
+*egg-info
