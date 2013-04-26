@@ -17,3 +17,4 @@ build
 priorities
 unpickable
 .noseids
+astats.egg-info

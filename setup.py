@@ -1,9 +1,8 @@
 import os
 from setuptools import setup, find_packages
 
-version = "1.0"
 
-description = """ Some very basic statistical operators. """
+version = "1.0.1"
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -12,11 +11,11 @@ long_description = read('README.md')
     
 
 setup(name='astatsa',
+      version=version,
       author="Andrea Censi",
       author_email="andrea@cds.caltech.edu",
       url='http://github.com/AndreaCensi/astatsa',
-      
-      description=description,
+      description=""" Some very basic statistical operators. """,
       long_description=long_description,
       keywords="statistics",
       license="LGPL",
@@ -30,7 +29,6 @@ setup(name='astatsa',
         # 'Topic :: Software Development :: Testing'
       ],
 
-	  version=version,
       download_url='http://github.com/AndreaCensi/astatsa/tarball/%s' % version,
       
       package_dir={'':'src'},
