@@ -5,6 +5,9 @@ import numpy as np
 import warnings
  
  
+__all__ = ['ExpectationWeighted']
+
+
 class ExpectationWeighted(ExpectationWeightedInterface):
     ''' 
         This operator allows, for each time step, to give a different weight
@@ -20,11 +23,11 @@ class ExpectationWeighted(ExpectationWeightedInterface):
     def merge(self, other):
         warnings.warn('To test')
         assert isinstance(other, ExpectationWeighted)
-        self.update(other.get_value(), other.get_mass())
-        
+        self.update(other.get_value(fill_value=0), other.get_mass())
         
     @contract(value='array,shape(x)', weight='array(>=0),shape(x)')
     def update(self, value, weight):
+        # Todo: check that they are either finite or the weight is zero
         check_all_finite(value)
         check_all_finite(weight)
         assert value.shape == weight.shape
@@ -51,10 +54,11 @@ class ExpectationWeighted(ExpectationWeightedInterface):
         self._result = self._compute_value(fill_value)
         return self._result
     
+    # @contract(returns='finite')
     def _compute_value(self, fill_value):
-        zeros = self.mass == 0
         mass = self.mass.copy()
         # set to one the mass
+        zeros = self.mass == 0
         mass[zeros] = 1
         result = self.accum / mass
         result[zeros] = fill_value 
