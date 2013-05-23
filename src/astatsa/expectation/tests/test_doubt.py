@@ -1,6 +1,6 @@
-from astatsa.utils.np_comparisons import assert_allclose
+from astatsa.expectation import ExpectationFast
+from astatsa.utils import assert_allclose
 import numpy as np
-from astatsa.expectation.expectation_fast import ExpectationFast
 
 def check_my_doubt(exp_class):
     values = [100.0, 200.0]

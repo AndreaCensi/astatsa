@@ -7,13 +7,18 @@ __all__ = ['MeanVariance']
 
 # TODO: write tests for this
 
-class MeanVariance:
+class MeanVariance(object):
 
     ''' Computes mean and variance of some stream. '''
     def __init__(self, max_window=None):
         self.Ex = Expectation(max_window)
         self.Edx2 = Expectation(max_window)
         self.num_samples = 0
+
+    def merge(self, other):
+        self.Ex.merge(other.Ex)
+        self.Edx2.merge(other.Edx2)
+        self.num_samples += other.num_samples
 
     @contract(x='array', dt='float,>0')
     def update(self, x, dt=1.0):
@@ -22,6 +27,7 @@ class MeanVariance:
         dx = x - self.Ex()
         dx2 = dx * dx
         self.Edx2.update(dx2, dt)
+
 
     def assert_some_data(self):
         if self.num_samples == 0:
