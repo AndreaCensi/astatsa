@@ -1,6 +1,6 @@
 ''' Some utils for checking and comparing arrays. '''
 
-__all__ = ['check_all_finite', 'all_finite', 'assert_allclose', 'check_allclose']
+__all__ = ['check_all_finite', 'all_finite', 'assert_allclose', 'check_allclose', 'show_some']
 
 from contracts import contract
 from numpy.ma.core import allclose
