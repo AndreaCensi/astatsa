@@ -1,8 +1,8 @@
-from abc import ABCMeta, abstractmethod
-from contracts import contract
+from abc import  abstractmethod
+from contracts import contract, ContractsMeta
 
 class ExpectationWeightedInterface():
-    __metaclass__ = ABCMeta
+    __metaclass__ = ContractsMeta
     
     
     @abstractmethod
