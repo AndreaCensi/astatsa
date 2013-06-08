@@ -1,6 +1,7 @@
 import numpy as np
 from contracts import contract
 from ..expectation import Expectation
+from reprep import Report
 
 __all__ = ['MeanVariance']
 
@@ -47,27 +48,31 @@ class MeanVariance(object):
         return self.get_mean(), self.get_std_dev()
 
     def publish(self, pub):
+        self.display(pub)
+    
+    @contract(report=Report)
+    def display(self, report):
         if self.num_samples == 0:
-            pub.text('warning',
+            report.text('warning',
                      'Cannot publish anything as I was never updated.')
             return
 
-        pub.text('stats', 'Num samples: %s' % self.num_samples)
+        report.text('stats', 'Num samples: %s' % self.num_samples)
 
         mean = self.Ex()
         S = self.get_std_dev()
 
         if mean.ndim == 1:
-            with pub.plot('mean') as pylab:
+            with report.plot('mean') as pylab:
                 pylab.plot(mean, 'k.')
 
-            with pub.plot('std_dev') as pylab:
+            with report.plot('std_dev') as pylab:
                 pylab.plot(S, 'k.')
                 a = pylab.axis()
                 m = 0.1 * (a[3] - a[2])
                 pylab.axis((a[0], a[1], 0, a[3] + m))
         else:
-            pub.text('warning', 'Not implemented for ndim > 1')
+            report.text('warning', 'Not implemented for ndim > 1')
 
 
 
