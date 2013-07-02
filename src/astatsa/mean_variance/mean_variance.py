@@ -1,19 +1,25 @@
 import numpy as np
 from contracts import contract
 from ..expectation import Expectation
+from reprep import Report
 
 __all__ = ['MeanVariance']
 
 
 # TODO: write tests for this
 
-class MeanVariance:
+class MeanVariance(object):
 
     ''' Computes mean and variance of some stream. '''
     def __init__(self, max_window=None):
         self.Ex = Expectation(max_window)
         self.Edx2 = Expectation(max_window)
         self.num_samples = 0
+
+    def merge(self, other):
+        self.Ex.merge(other.Ex)
+        self.Edx2.merge(other.Edx2)
+        self.num_samples += other.num_samples
 
     @contract(x='array', dt='float,>0')
     def update(self, x, dt=1.0):
@@ -22,6 +28,7 @@ class MeanVariance:
         dx = x - self.Ex()
         dx2 = dx * dx
         self.Edx2.update(dx2, dt)
+
 
     def assert_some_data(self):
         if self.num_samples == 0:
@@ -41,27 +48,31 @@ class MeanVariance:
         return self.get_mean(), self.get_std_dev()
 
     def publish(self, pub):
+        self.display(pub)
+    
+    @contract(report=Report)
+    def display(self, report):
         if self.num_samples == 0:
-            pub.text('warning',
+            report.text('warning',
                      'Cannot publish anything as I was never updated.')
             return
 
-        pub.text('stats', 'Num samples: %s' % self.num_samples)
+        report.text('stats', 'Num samples: %s' % self.num_samples)
 
         mean = self.Ex()
         S = self.get_std_dev()
 
         if mean.ndim == 1:
-            with pub.plot('mean') as pylab:
+            with report.plot('mean') as pylab:
                 pylab.plot(mean, 'k.')
 
-            with pub.plot('std_dev') as pylab:
+            with report.plot('std_dev') as pylab:
                 pylab.plot(S, 'k.')
                 a = pylab.axis()
                 m = 0.1 * (a[3] - a[2])
                 pylab.axis((a[0], a[1], 0, a[3] + m))
         else:
-            pub.text('warning', 'Not implemented for ndim > 1')
+            report.text('warning', 'Not implemented for ndim > 1')
 
 
 
