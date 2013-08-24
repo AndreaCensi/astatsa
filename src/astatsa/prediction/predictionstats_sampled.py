@@ -29,34 +29,53 @@ class PredictionStatsSampled(object):
         self.values_b.extend(bf[accept])
         
     def publish(self, pub):
-        f = pub.figure()
+        f = pub.figure(cols=4)
         
         a = np.array(self.values_a)
         b = np.array(self.values_b)
         
+        def labels(pylab):
+            pylab.xlabel(self.label_a)
+            pylab.ylabel(self.label_b)
+            
         style = dict(markersize=0.3)
         with f.plot('plot1') as pylab:
             pylab.plot(a, b, '.', **style)
-            pylab.xlabel(self.label_a)
-            pylab.ylabel(self.label_b)
+            labels(pylab)
 
         with f.plot('plot_equal') as pylab:
             pylab.plot(a, b, '.', **style)
             pylab.axis('equal')
-            pylab.xlabel(self.label_a)
-            pylab.ylabel(self.label_b)
+            labels(pylab)
 
         with f.plot('plot1_axisb') as pylab:
             pylab.plot(a, b, '.', **style)
             x_axis_set(pylab, np.min(b), np.max(b))
-            pylab.xlabel(self.label_a)
-            pylab.ylabel(self.label_b)
+            labels(pylab)
 
         with f.plot('plot1_axisa') as pylab:
             pylab.plot(a, b, '.', **style)
             y_axis_set(pylab, np.min(a), np.max(a))
-            pylab.xlabel(self.label_a)
-            pylab.ylabel(self.label_b)
+            labels(pylab)
+
+        style = dict(markersize=0.3)
+        with f.plot('plot_nat') as pylab:
+            plot_kde_gaussian(pylab, x=a, y=b,
+                              xmin=a.min(), xmax=a.max(),
+                              ymin=b.min(), ymax=b.max(), ncells=100)
+            labels(pylab)
+
+        with f.plot('plot_a_bounds') as pylab:
+            plot_kde_gaussian(pylab, x=a, y=b,
+                              xmin=a.min(), xmax=a.max(),
+                              ymin=a.min(), ymax=a.max(), ncells=100)
+            labels(pylab)
+
+        with f.plot('plot_b_bounds') as pylab:
+            plot_kde_gaussian(pylab, x=a, y=b,
+                              xmin=b.min(), xmax=b.max(),
+                              ymin=b.min(), ymax=b.max(), ncells=100)
+            labels(pylab)
         
         if False:
             n = 100
@@ -76,50 +95,22 @@ class PredictionStatsSampled(object):
                 extent = [yedges[0], yedges[-1], xedges[-1], xedges[0]]
                 S = scale_score(H)
                 pylab.imshow(S, extent=extent, interpolation='nearest')
-    
-            
-# 
-# class PredictionStatsWeighted(object):
-# 
-#     @contract(label_a='str', label_b='str')
-#     def __init__(self, label_a='a', label_b='b'):
-#         self.label_a = label_a
-#         self.label_b = label_b
-#         self.Ea = MeanVariance()
-#         self.Eb = MeanVariance()
-#         self.Edadb = Expectation()
-#         self.R = None
-#         self.R_needs_update = True
-#         self.num_samples = 0
-#         self.last_a = None
-#         self.last_b = None
-# 
-#     @contract(a='array,shape(x)', b='array,shape(x)', w='array,shape(x)')
-#     def update(self, a, b, w):
-#         self.Ea.update(a, dt)
-#         self.Eb.update(b, dt)
-#         da = a - self.Ea.get_mean()
-#         db = b - self.Eb.get_mean()
-#         self.Edadb.update(da * db, dt)
-#         self.num_samples += dt
-# 
-#         self.R_needs_update = True
-#         self.last_a = a
-#         self.last_b = b
-# 
-#     def get_correlation(self):
-#         ''' Returns the correlation between the two streams. '''
-#         if self.R_needs_update:
-#             std_a = self.Ea.get_std_dev()
-#             std_b = self.Eb.get_std_dev()
-#             p = std_a * std_b
-#             zeros = p == 0
-#             p[zeros] = 1
-#             R = self.Edadb() / p
-#             R[zeros] = np.NAN
-#             self.R = R
-#         self.R_needs_update = False
-#         return self.R
+     
+     
+     
+def plot_kde_gaussian(pylab, x, y, xmin, xmax, ymin, ymax, ncells):
+    X, Y = np.mgrid[xmin:xmax:(1j * ncells), ymin:ymax:(1j * ncells)]
+    positions = np.vstack([X.ravel(), Y.ravel()])
+    values = np.vstack([x, y])
+    from scipy import stats
+    kernel = stats.gaussian_kde(values)
+    Z = np.reshape(kernel(positions).T, X.shape)
+
+    pylab.imshow(np.rot90(Z), cmap=pylab.cm.gist_earth_r,
+              extent=[xmin, xmax, ymin, ymax])
+#     pylab.plot(x, y, 'k.', markersize=0.1)
+    x_axis_set(pylab, xmin, xmax)
+    y_axis_set(pylab, ymin, ymax)
 
 
-    
+
