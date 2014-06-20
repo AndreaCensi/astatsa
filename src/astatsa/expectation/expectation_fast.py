@@ -1,6 +1,17 @@
-from . import ExpectationInterface, contract, np
-from astatsa.utils import check_all_finite
+
+
+
+
+
 import warnings
+
+from contracts import contract
+
+from astatsa.utils import check_all_finite
+import numpy as np
+
+from .interface import ExpectationInterface
+
 
 __all__ = ['ExpectationFast', 'ExpectationFaster']
 
@@ -25,7 +36,20 @@ class ExpectationFast(ExpectationInterface):
     def merge(self, other):
         warnings.warn('to test')
         assert isinstance(other, ExpectationFast)
-        self.update(other.get_value(), other.accum_mass)
+        if self.accum is None:
+            if other.accum is not None:
+                # the other is valid, we are not
+                self.update(other.get_value(), other.accum_mass)
+            else: 
+                # both invalid
+                pass
+        else:
+            if other.accum is not None:
+                # both valid
+                self.update(other.get_value(), other.accum_mass)
+            else:
+                # we are valid, not the other
+                pass
 
     @contract(cur_mass='float,>=0')
     def reset(self, cur_mass=1.0):

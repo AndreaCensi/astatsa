@@ -1,8 +1,8 @@
-import numpy as np 
 from contracts import contract
 
 from astatsa.expectation import Expectation
 from astatsa.mean_variance import MeanVariance
+import numpy as np
 
 
 __all__ = ['PredictionStats']

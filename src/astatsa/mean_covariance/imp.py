@@ -8,12 +8,18 @@
 # Means and Variances. Journal of the American Statistical Association,
 # Vol. 69, No. 348, 859-866. 
 
-import numpy as np
-from numpy.linalg.linalg import pinv, LinAlgError
 import warnings
+
+from numpy.linalg.linalg import pinv, LinAlgError
+
 from astatsa.expectation import Expectation
-from astatsa.utils import outer
-from astatsa.mean_covariance.cov2corr_imp import cov2corr
+import numpy as np
+
+from ..utils import outer
+from .cov2corr_imp import cov2corr
+
+
+__all__ = ['MeanCovariance']
 
 
 class MeanCovariance(object):

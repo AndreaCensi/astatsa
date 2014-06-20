@@ -1,4 +1,7 @@
-from . import ExpectationInterface, contract
+from contracts import contract
+
+from .interface import ExpectationInterface
+
 
 __all__ = ['ExpectationSlow']
 

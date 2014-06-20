@@ -1,5 +1,10 @@
 from abc import  abstractmethod
+
 from contracts import contract, ContractsMeta
+
+
+__all__ = ['ExpectationWeightedInterface']
+
 
 class ExpectationWeightedInterface():
     __metaclass__ = ContractsMeta

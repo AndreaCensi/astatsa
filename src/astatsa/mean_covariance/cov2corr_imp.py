@@ -1,6 +1,6 @@
 import numpy as np
 
-
+__all__ = ['cov2corr']
 
 def cov2corr(covariance, zero_diagonal=False):
     ''' 

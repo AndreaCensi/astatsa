@@ -1,7 +1,10 @@
-import numpy as np
 from contracts import contract
-from ..expectation import Expectation
+
+import numpy as np
 from reprep import Report
+
+from ..expectation import Expectation
+
 
 __all__ = ['MeanVariance']
 

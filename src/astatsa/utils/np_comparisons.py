@@ -25,7 +25,7 @@ except ImportError:
 
 
 def check_allclose(actual, desired, rtol=1e-7, atol=0,
-                        err_msg='', verbose=True):
+                        err_msg='', verbose=True):  # @UnusedVariable
     if not allclose(actual, desired, rtol=rtol, atol=atol):
         err_msg += '\n%s != %s ' % (actual, desired)
         raise Exception(err_msg)

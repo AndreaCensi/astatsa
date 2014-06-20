@@ -1,7 +1,10 @@
-import numpy as np 
-from contracts import contract
 import warnings
-from reprep.plot_utils.axes import x_axis_set, y_axis_set
+
+from contracts import contract
+
+import numpy as np
+from reprep.plot_utils import x_axis_set, y_axis_set
+
 
 __all__ = ['PredictionStatsSampled']
 

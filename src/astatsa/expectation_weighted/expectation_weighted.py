@@ -1,10 +1,13 @@
-from astatsa.expectation_weighted.interface import ExpectationWeightedInterface
-from astatsa.utils.np_comparisons import check_all_finite
-from contracts import contract
-import numpy as np
 import warnings
- 
- 
+
+from contracts import contract
+
+import numpy as np
+
+from ..utils import check_all_finite
+from .interface import ExpectationWeightedInterface
+
+
 __all__ = ['ExpectationWeighted']
 
 
