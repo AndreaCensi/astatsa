@@ -22,21 +22,73 @@ from .cov2corr_imp import cov2corr
 __all__ = ['MeanCovariance']
 
 
+class EstimateAssocOp():
+    
+    def __init__(self, operation):
+        self.num_samples = 0
+        self._value = None
+        self.operation = operation
+
+    def update(self, value):
+        if self._value is None:
+            self._value = value.copy()
+        else:
+            self._value = self.operation(self._value, value)
+        self.num_samples += 1
+        
+    def get_value(self):
+        if self.get_num_samples() == 0:
+            msg = 'No samples seen'
+            raise ValueError(msg)
+        return self._value
+    
+    def get_num_samples(self):  
+        return self.num_samples
+    
+    def merge(self, other):
+        if self.get_num_samples() == 0:
+            if other.get_num_samples() > 0:
+                self.num_samples = other.get_num_samples()
+                self._value = other.get_value().copy()
+        else:
+            self.num_samples += other.get_num_samples()
+            self._value = self.operation(self._value,other.get_value())
+            
+def np_maximum(a, b):
+    return np.maximum(a, b)
+
+def np_minimum(a, b):
+    return np.minimum(a, b)
+
+
+class EstimateMax(EstimateAssocOp):
+    def __init__(self):
+        EstimateAssocOp.__init__(self, np_maximum)
+    
+
+class EstimateMin(EstimateAssocOp):
+    def __init__(self):
+        EstimateAssocOp.__init__(self, np_minimum)
+
+
+
 class MeanCovariance(object):
     ''' Computes mean and covariance of a quantity '''
 
     def __init__(self, max_window=None):
         self.mean_accum = Expectation(max_window)
         self.covariance_accum = Expectation(max_window)
-        self.minimum = None
-        self.maximum = None  # TODO: use class
+        self.est_min = EstimateMin()
+        self.est_max = EstimateMax()
         self.num_samples = 0
+        self.shape = None
         
     def merge(self, other):
-        warnings.warn('To test')
         assert isinstance(other, MeanCovariance)
         self.mean_accum.merge(other.mean_accum)
         self.covariance_accum.merge(other.covariance_accum)
+        self.est_min.merge(other.est_min)
+        self.est_max.merge(other.est_max)
         self.num_samples += other.num_samples
         warnings.warn('minimum/maximum missing')
 
@@ -45,20 +97,16 @@ class MeanCovariance(object):
         return self.num_samples
 
     def update(self, value, dt=1.0):
-        self.num_samples += dt
-
-        n = value.size
-        if  self.maximum is None:
-            self.maximum = value.copy()
-            self.minimum = value.copy()
-            self.P_t = np.zeros(shape=(n, n), dtype=value.dtype)
+        if self.num_samples == 0:
+            self.shape = value.shape
         else:
-            # TODO: check dimensions
-            if not (value.shape == self.maximum.shape):
-                raise ValueError('Value shape changed: %s -> %s' % 
-                                 (self.maximum.shape, value.shape))
-            self.maximum = np.maximum(value, self.maximum)
-            self.minimum = np.minimum(value, self.minimum)
+            if not (value.shape == self.shape):
+                msg = ('Value shape changed: %s -> %s' %
+                        (self.shape, value.shape))
+                raise ValueError(msg)
+
+        self.est_min.update(value)
+        self.est_max.update(value)
 
         self.mean_accum.update(value, dt)
         mean = self.mean_accum.get_value()
@@ -67,6 +115,8 @@ class MeanCovariance(object):
         P = outer(value_norm, value_norm)
         self.covariance_accum.update(P, dt)
         self.last_value = value
+
+        self.num_samples += dt
 
     def assert_some_data(self):
         if self.num_samples == 0:
@@ -78,11 +128,11 @@ class MeanCovariance(object):
 
     def get_maximum(self):
         self.assert_some_data()
-        return self.maximum
+        return self.est_max.get_value()
 
     def get_minimum(self):
         self.assert_some_data()
-        return self.minimum
+        return self.est_min.get_value()
 
     def get_covariance(self):
         self.assert_some_data()
@@ -107,7 +157,5 @@ class MeanCovariance(object):
             # logger.error('Did not converge; saved on %s' % filename)
 
     
-        
-        
-        
+
         
