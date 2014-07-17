@@ -19,7 +19,9 @@ class PredictionStatsSampled(object):
         self.values_a = []
         self.values_b = []
 
-    @contract(a='array,shape(x)', b='array,shape(x)', w='array(bool),shape(x)')
+    @contract(a='array,shape(x)', 
+              b='array,shape(x)', 
+              w='array(bool),shape(x)')
     def update(self, a, b, w):
         af = a.flatten()
         bf = b.flatten()
@@ -94,7 +96,6 @@ class PredictionStatsSampled(object):
     
             with f.plot('hist_scaled') as pylab:
                 warnings.warn('remove dependency')
-                from boot_agents.utils.nonparametric import scale_score
                 extent = [yedges[0], yedges[-1], xedges[-1], xedges[0]]
                 S = scale_score(H)
                 pylab.imshow(S, extent=extent, interpolation='nearest')
@@ -117,3 +118,11 @@ def plot_kde_gaussian(pylab, x, y, xmin, xmax, ymin, ymax, ncells):
 
 
 
+
+def scale_score(x, kind='quicksort', kind2='quicksort'):
+    y = x.copy()
+    order = np.argsort(x.flat, kind=kind)
+    # Black magic ;-) Probably the smartest thing I came up with today. 
+    order_order = np.argsort(order, kind=kind2)
+    y.flat[:] = order_order.astype(y.dtype)
+    return y
