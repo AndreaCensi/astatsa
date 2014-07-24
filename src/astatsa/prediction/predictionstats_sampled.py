@@ -3,7 +3,6 @@ import warnings
 from contracts import contract
 
 import numpy as np
-from reprep.plot_utils import x_axis_set, y_axis_set
 
 
 __all__ = ['PredictionStatsSampled']
@@ -34,6 +33,8 @@ class PredictionStatsSampled(object):
         self.values_b.extend(bf[accept])
         
     def publish(self, pub):
+        from reprep.plot_utils import x_axis_set, y_axis_set
+
         f = pub.figure(cols=4)
         
         a = np.array(self.values_a)
@@ -103,6 +104,8 @@ class PredictionStatsSampled(object):
      
      
 def plot_kde_gaussian(pylab, x, y, xmin, xmax, ymin, ymax, ncells):
+    from reprep.plot_utils import x_axis_set, y_axis_set
+
     X, Y = np.mgrid[xmin:xmax:(1j * ncells), ymin:ymax:(1j * ncells)]
     positions = np.vstack([X.ravel(), Y.ravel()])
     values = np.vstack([x, y])

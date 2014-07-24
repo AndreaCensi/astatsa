@@ -1,7 +1,5 @@
 from contracts import contract
 
-from astatsa.expectation import Expectation
-from astatsa.mean_variance import MeanVariance
 import numpy as np
 
 
@@ -14,6 +12,9 @@ class PredictionStats(object):
     def __init__(self, label_a='a', label_b='b'):
         self.label_a = label_a
         self.label_b = label_b
+        from astatsa.expectation import Expectation
+        from astatsa.mean_variance import MeanVariance
+
         self.Ea = MeanVariance()
         self.Eb = MeanVariance()
         self.Edadb = Expectation()
