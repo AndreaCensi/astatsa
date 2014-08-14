@@ -33,7 +33,9 @@ setup(name='astatsa',
       
       package_dir={'':'src'},
       packages=find_packages('src'),
-      install_requires=[ ],
+      install_requires=[ 
+        # Add numpy?
+      ],
       tests_require=['nose'],
       entry_points={},
 )
