@@ -1,7 +1,7 @@
-from astatsa.expectation_weighted.expectation_weighted import ExpectationWeighted
-
+from .expectation_weighted import ExpectationWeighted
+from astatsa.utils import assert_allclose
 import numpy as np
-from astatsa.utils.np_comparisons import assert_allclose
+
 
 def test_weighted_1():
     ex = ExpectationWeighted()
