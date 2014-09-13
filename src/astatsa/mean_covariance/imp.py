@@ -51,9 +51,10 @@ class EstimateAssocOp():
                 self.num_samples = other.get_num_samples()
                 self._value = other.get_value().copy()
         else:
-            self.num_samples += other.get_num_samples()
-            self._value = self.operation(self._value,other.get_value())
-            
+            if other.get_num_samples() > 0:
+                self.num_samples += other.get_num_samples()
+                self._value = self.operation(self._value,other.get_value())
+                
 def np_maximum(a, b):
     return np.maximum(a, b)
 
