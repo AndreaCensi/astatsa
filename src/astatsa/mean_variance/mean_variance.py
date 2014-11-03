@@ -1,8 +1,7 @@
-from contracts import contract
-
 import numpy as np
-from reprep import Report
 
+from contracts import contract
+from reprep import Report
 from ..expectation import Expectation
 
 
@@ -12,8 +11,8 @@ __all__ = ['MeanVariance']
 # TODO: write tests for this
 
 class MeanVariance(object):
+    """ Computes mean and variance of some stream. """
 
-    ''' Computes mean and variance of some stream. '''
     def __init__(self, max_window=None):
         self.Ex = Expectation(max_window)
         self.Edx2 = Expectation(max_window)
@@ -32,7 +31,6 @@ class MeanVariance(object):
         dx2 = dx * dx
         self.Edx2.update(dx2, dt)
 
-
     def assert_some_data(self):
         if self.num_samples == 0:
             raise Exception('Never updated')
@@ -45,19 +43,19 @@ class MeanVariance(object):
 
     def get_std_dev(self):
         return np.sqrt(self.get_var())
-    
+
     def get_mean_stddev(self):
         """ returns a tuple (mean, stddev) """
         return self.get_mean(), self.get_std_dev()
 
     def publish(self, pub):
         self.display(pub)
-    
+
     @contract(report=Report)
     def display(self, report):
         if self.num_samples == 0:
             report.text('warning',
-                     'Cannot publish anything as I was never updated.')
+                        'Cannot publish anything as I was never updated.')
             return
 
         report.text('stats', 'Num samples: %s' % self.num_samples)

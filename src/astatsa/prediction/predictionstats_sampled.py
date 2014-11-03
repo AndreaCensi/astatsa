@@ -1,15 +1,13 @@
 import warnings
+import numpy as np
 
 from contracts import contract
-
-import numpy as np
 
 
 __all__ = ['PredictionStatsSampled']
 
 
 class PredictionStatsSampled(object):
-
     @contract(label_a='str', label_b='str', probability='>0,<=1')
     def __init__(self, probability, label_a='a', label_b='b'):
         self.probability = probability
@@ -18,8 +16,8 @@ class PredictionStatsSampled(object):
         self.values_a = []
         self.values_b = []
 
-    @contract(a='array,shape(x)', 
-              b='array,shape(x)', 
+    @contract(a='array,shape(x)',
+              b='array,shape(x)',
               w='array(bool),shape(x)')
     def update(self, a, b, w):
         af = a.flatten()
@@ -28,22 +26,22 @@ class PredictionStatsSampled(object):
         n = af.size
         accept = np.random.rand(n) < self.probability
         accept = np.logical_and(accept, wf)
-        
+
         self.values_a.extend(af[accept])
         self.values_b.extend(bf[accept])
-        
+
     def publish(self, pub):
         from reprep.plot_utils import x_axis_set, y_axis_set
 
         f = pub.figure(cols=4)
-        
+
         a = np.array(self.values_a)
         b = np.array(self.values_b)
-        
+
         def labels(pylab):
             pylab.xlabel(self.label_a)
             pylab.ylabel(self.label_b)
-            
+
         style = dict(markersize=0.3)
         with f.plot('plot1') as pylab:
             pylab.plot(a, b, '.', **style)
@@ -82,27 +80,26 @@ class PredictionStatsSampled(object):
                               xmin=b.min(), xmax=b.max(),
                               ymin=b.min(), ymax=b.max(), ncells=100)
             labels(pylab)
-        
+
         if False:
             n = 100
-            a1, a2 = np.percentile(a, [1, 99]) 
+            a1, a2 = np.percentile(a, [1, 99])
             b1, b2 = np.percentile(b, [1, 99])
             a_bins = np.linspace(a1, a2, n)
             b_bins = np.linspace(b1, b2, n)
             H, xedges, yedges = np.histogram2d(a, b, bins=[a_bins, b_bins])
-            
+
             with f.plot('hist') as pylab:
                 extent = [yedges[0], yedges[-1], xedges[-1], xedges[0]]
                 pylab.imshow(H, extent=extent, interpolation='nearest')
-    
+
             with f.plot('hist_scaled') as pylab:
                 warnings.warn('remove dependency')
                 extent = [yedges[0], yedges[-1], xedges[-1], xedges[0]]
                 S = scale_score(H)
                 pylab.imshow(S, extent=extent, interpolation='nearest')
-     
-     
-     
+
+
 def plot_kde_gaussian(pylab, x, y, xmin, xmax, ymin, ymax, ncells):
     from reprep.plot_utils import x_axis_set, y_axis_set
 
@@ -110,16 +107,15 @@ def plot_kde_gaussian(pylab, x, y, xmin, xmax, ymin, ymax, ncells):
     positions = np.vstack([X.ravel(), Y.ravel()])
     values = np.vstack([x, y])
     from scipy import stats
+
     kernel = stats.gaussian_kde(values)
     Z = np.reshape(kernel(positions).T, X.shape)
 
     pylab.imshow(np.rot90(Z), cmap=pylab.cm.gist_earth_r,
-              extent=[xmin, xmax, ymin, ymax])
-#     pylab.plot(x, y, 'k.', markersize=0.1)
+                 extent=[xmin, xmax, ymin, ymax])
+    # pylab.plot(x, y, 'k.', markersize=0.1)
     x_axis_set(pylab, xmin, xmax)
     y_axis_set(pylab, ymin, ymax)
-
-
 
 
 def scale_score(x, kind='quicksort', kind2='quicksort'):
